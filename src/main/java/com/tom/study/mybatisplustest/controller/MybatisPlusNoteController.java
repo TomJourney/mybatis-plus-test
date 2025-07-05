@@ -5,6 +5,8 @@ import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author Tom
  * @version 1.0.0
@@ -25,5 +27,15 @@ public class MybatisPlusNoteController {
     @PostMapping(path = "/add-user", consumes = "application/json")
     public void addUser(@RequestBody UserPO userPO) {
         userAppService.saveNewUser(userPO);
+    }
+
+    @PostMapping(path = "/findUserByCondition01", consumes = "application/json")
+    public List<UserPO> findUserByCondition01() {
+        return userAppService.qryByCondition01();
+    }
+
+    @PostMapping(path = "/updateByCondition2", consumes = "application/json")
+    public void updateByCondition2() {
+        userAppService.updateByCondition2();
     }
 }

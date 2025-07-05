@@ -92,6 +92,84 @@ mybatis-plus.global-config.db-config.update-strategy=not_null
 
 
 
+<br>
+
+---
+
+### 【3.1.1】业务场景-带多字段条件的查询
+
+【业务场景】查询id大于100且名字包含6的用户
+
+sql语句伪代码： select * from table where id > 100 and name like %6%；【说明：本sql仅供参考，生产环境不要使用】
+
+【构建查询语句，封装到QueryWrapper】qryByCondition01()
+
+```java
+@Service
+public class UserAppService {
+
+    @Autowired
+    UserMapper userMapper;
+  
+
+    public List<UserPO> qryByCondition01() {
+        QueryWrapper<UserPO> userPOQueryWrapper = new QueryWrapper<UserPO>()
+                .select("id", "name", "addr")
+                .like("name", "6")
+                .ge("id", 100);
+        // 查询
+        return userMapper.selectList(userPOQueryWrapper);
+    }
+}
+```
+
+【sql执行日志】 
+
+```c++
+==>  Preparing: SELECT id,name,addr FROM user_tbl WHERE (name LIKE ? AND id >= ?)
+==> Parameters: %6%(String), 100(Integer)
+<==    Columns: id, name, addr
+<==        Row: 106, tr106, 成都市天府大道106号
+<==        Row: 116, tr116, 成都市天府大道116号
+<==      Total: 2
+```
+
+<br>
+
+---
+
+### 【3.1.2】业务场景-带条件的更新
+
+【业务场景】根据name等于user2的用户的地址addr，手机号码mobilePhone； 
+
+sql语句伪代码： update table set addr='XXX', mobile_phone='XXX' where name='user2'；【说明：本sql仅供参考，生产环境不要使用】
+
+【构建更新的where子句，封装到QueryWrapper】updateByCondition02()
+
+```java
+public void updateByCondition2() {
+    QueryWrapper<UserPO> updateWrapper = new QueryWrapper<UserPO>()
+            .eq("name", "user2");
+    UserPO userPO = new UserPO();
+    userPO.setAddr("成都天府四街401号");
+    userPO.setMobilePhone("110");
+    userMapper.update(userPO, updateWrapper);
+}
+```
+
+【sql执行日志】
+
+```c++
+JDBC Connection [com.mysql.cj.jdbc.ConnectionImpl@774e182c] will not be managed by Spring
+==>  Preparing: UPDATE user_tbl SET mobile_phone=?, addr=? WHERE (name = ?)
+==> Parameters: 110(String), 成都天府四街401号(String), user2(String)
+<==    Updates: 1
+```
+
+<br>
+
+---
+
 
 
 

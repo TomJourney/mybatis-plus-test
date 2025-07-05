@@ -1,5 +1,7 @@
 package com.tom.study.mybatisplustest.infrastructure.dao.user.mapper;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -13,8 +15,13 @@ import lombok.Data;
 @Data
 @TableName("user_tbl")
 public class UserPO {
+    @TableId("id")
     private Long id;
+
+    @TableField("name")
     private String name;
+
     private String mobilePhone;
+
     private String addr;
 }

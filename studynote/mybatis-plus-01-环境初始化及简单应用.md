@@ -6,6 +6,32 @@
 
 本文集成了springboot与mybatis-plus，并提供了一个mybatis-plus的简单应用；
 
+<font color=red>【使用MyBatisPlus的关键】springboot集成了mybatis的基础上，引入mybatis-plus就2步：</font>
+
+- 步骤1）引入mybatis-plus依赖，删除 mybatis-spring-boot-starter 依赖；
+- 步骤2）业务Mapper如UserMapper继承MyBatis-Plus中的BaseMapper；
+
+【pom.xml中spring-mybatis与mybaits-plus依赖配置】
+
+```xml
+<!-- mybatis conf （新增mybatis-plus-boot-starter依赖，需要把mybatis-spring-boot-starter注释或删除，否则报包冲突）-->
+<!--    <dependency>-->
+<!--      <groupId>org.mybatis.spring.boot</groupId>-->
+<!--      <artifactId>mybatis-spring-boot-starter</artifactId>-->
+<!--      <version>3.0.3</version>-->
+<!--    </dependency>-->
+<dependency>
+  <groupId>com.baomidou</groupId>
+  <artifactId>mybatis-plus-boot-starter</artifactId>
+  <version>3.5.12</version>
+</dependency>
+<dependency>
+  <groupId>org.mybatis</groupId>
+  <artifactId>mybatis-spring</artifactId>
+  <version>3.0.3</version>
+</dependency>
+```
+
 <br>
 
 ---
@@ -233,7 +259,7 @@ public interface UserMapper extends BaseMapper<UserPO> {
 }
 ```
 
-【UserPO】
+### 【UserPO】
 
 ```java
 @Data
@@ -244,6 +270,23 @@ public class UserPO {
     private String mobilePhone;
     private String addr;
 }
+```
+
+### 【建表语句】
+
+```sql
+-- mywarn.user_tbl definition
+
+CREATE TABLE `user_tbl` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '用户名称',
+  `mobile_phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '移动电话',
+  `addr` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '地址',
+  `user_state` char(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '用户状态/ON-在线/OFF-离线',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_modify_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表';
 ```
 
 <br>

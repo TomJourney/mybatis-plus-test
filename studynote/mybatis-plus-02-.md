@@ -8,8 +8,11 @@
 
 本文主要内容如下：
 
-- MybatisPlus-常见注解；
-- MybatisPlus-常见配置；
+- MybatisPlus常见注解；
+- MybatisPlus常见配置；
+- 条件构造器；
+- 自定义sql；
+- Service接口
 
 <br>
 
@@ -96,7 +99,7 @@ mybatis-plus.global-config.db-config.update-strategy=not_null
 
 ---
 
-### 【3.1.1】业务场景-带多字段条件的查询
+### 【3.1.1】业务场景1-带多字段条件的查询-使用QueryWrapper
 
 【业务场景】查询id大于100且名字包含6的用户
 
@@ -138,7 +141,7 @@ public class UserAppService {
 
 ---
 
-### 【3.1.2】业务场景-带条件的更新
+### 【3.1.2】业务场景2-带条件的更新-使用QueryWrapper
 
 【业务场景】根据name等于user2的用户的地址addr，手机号码mobilePhone； 
 
@@ -169,6 +172,136 @@ JDBC Connection [com.mysql.cj.jdbc.ConnectionImpl@774e182c] will not be managed 
 <br>
 
 ---
+
+### 【3.1.3】业务场景3-带条件对字段做计算-使用UpdateWrapper
+
+【业务场景】更新id为4,5,6的用户的余额，都加500元（消费券）； 
+
+sql语句伪代码： update table set balance = balance + 500  where id in (4,5,6)；【说明：本sql仅供参考，生产环境不要使用】
+
+【构建更新的where子句，封装到UpdateWrapper】updateByCondition03()
+
+```java
+public void updateByCondition3() {
+        UpdateWrapper<UserPO> updateWrapper = new UpdateWrapper<UserPO>()
+                .setSql("balance = balance + 500")
+                .in("id", Arrays.asList(4, 5, 6));
+        userMapper.update(null, updateWrapper);
+    }
+```
+
+【sql执行日志】
+
+```c++
+JDBC Connection [com.mysql.cj.jdbc.ConnectionImpl@7d18e48f] will not be managed by Spring
+==>  Preparing: UPDATE user_tbl SET balance = balance + 500 WHERE (id IN (?,?,?))
+==> Parameters: 4(Integer), 5(Integer), 6(Integer)
+<==    Updates: 3
+```
+
+<br>
+
+---
+
+### 【3.1.4】lambda语法的QueryWrapper-使用LambdaQueryWrapper
+
+```java
+public List<UserPO> qryByLambdaCondition04() {
+    LambdaQueryWrapper<UserPO> userPOQueryWrapper = new LambdaQueryWrapper<UserPO>()
+            .select(UserPO::getId, UserPO::getName, UserPO::getAddr)
+            .like(UserPO::getName, "6")
+            .ge(UserPO::getId, 100);
+    // 查询
+    return userMapper.selectList(userPOQueryWrapper);
+}
+```
+
+【sql日志】
+
+```c++
+==>  Preparing: SELECT id,name,addr FROM user_tbl WHERE (name LIKE ? AND id >= ?)
+==> Parameters: %6%(String), 100(Integer)
+<==    Columns: id, name, addr
+<==        Row: 106, tr106, 成都市天府大道106号
+<==        Row: 116, tr116, 成都市天府大道116号
+<==      Total: 2
+```
+
+<br>
+
+---
+
+# 【4】自定义sql（MyBatisPlus的优缺点）
+
+1）应用场景：使用mybatisPlus的Wrapper构建复杂的where条件，然后自定义sql语句中剩下的部分；
+
+2）<font color=red>MyBatisPlus的优缺点： </font>
+
+- 优点：能够容易定义where子句的查询条件；
+- 缺点：不容易定义where关键字之前的sql，如聚合函数count(),avg()等 （如sql= select user_state, count(1) from table where id in (1,2,3) group by user_state)；
+
+## 【4.1】MyBatisPlus使用自定义sql的场景
+
+【业务场景】更新id为4,5,6的用户的余额，都加500元。
+
+### 【第1步】构建更新条件-使用LambdaQueryWrapper
+
+```java
+public void updateBalanceByDiySql() {
+        LambdaQueryWrapper<UserPO> userPOQueryWrapper = new LambdaQueryWrapper<UserPO>()
+                .in(UserPO::getId, List.of(4, 5, 6));
+        // 更新
+        userMapper.updateBalance(userPOQueryWrapper, new BigDecimal("500"));
+    }
+```
+
+### 【第2步】mapper方法中使用@Param注解声明wrapper实例名称为ew（而且必须为ew）
+
+```java
+public interface UserMapper extends BaseMapper<UserPO> {
+
+    void updateBalance(@Param("ew")LambdaQueryWrapper<UserPO> wrapper, @Param("balance")BigDecimal balance);
+}
+```
+
+补充：也可以使用常量Constants.WRAPPER获取ew值；
+
+### 【第3步】自定义sql，使用Wrapper条件
+
+【UserMapper.xml】 UserMapper.xml与UserMapper.java 在同一个package下； 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserMapper">
+
+    <update id="updateBalance">
+        update user_tbl set balance = balance + #{balance} ${ew.customSqlSegment}
+    </update>
+</mapper>
+```
+
+【sql日志】
+
+```c++
+==>  Preparing: update user_tbl set balance = balance + ? WHERE (id IN (?,?,?))
+==> Parameters: 500(BigDecimal), 4(Integer), 5(Integer), 6(Integer)
+<==    Updates: 3
+```
+
+<br>
+
+---
+
+# 【5】MyBatisPlus提供的Service接口（IService）
+
+1）MyBatisPlus提供的IService接口：自定义多个增删改查方法api；
+
+## 【5.1】
+
+
+
+
 
 
 

@@ -38,4 +38,19 @@ public class MybatisPlusNoteController {
     public void updateByCondition2() {
         userAppService.updateByCondition2();
     }
+
+    @PostMapping(path = "/updateByCondition3", consumes = "application/json")
+    public void updateByCondition3() {
+        userAppService.updateByCondition3();
+    }
+
+    @PostMapping(path = "/qryByLambdaCondition04", consumes = "application/json")
+    public List<UserPO> qryByLambdaCondition04() {
+        return userAppService.qryByLambdaCondition04();
+    }
+
+    @PostMapping(path = "/updateBalanceByDiySql", consumes = "application/json")
+    public void updateBalanceByDiySql() {
+        userAppService.updateBalanceByDiySql();
+    }
 }

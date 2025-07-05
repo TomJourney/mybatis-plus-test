@@ -1,11 +1,15 @@
 package com.tom.study.mybatisplustest.appilcation.user.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserMapper;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,4 +60,27 @@ public class UserAppService {
 //==>  Preparing: UPDATE user_tbl SET mobile_phone=?, addr=? WHERE (name = ?)
 //==> Parameters: 110(String), 成都天府四街401号(String), user2(String)
 //            <==    Updates: 1
+
+    public void updateByCondition3() {
+        UpdateWrapper<UserPO> updateWrapper = new UpdateWrapper<UserPO>()
+                .setSql("balance = balance + 500")
+                .in("id", Arrays.asList(4, 5, 6));
+        userMapper.update(null, updateWrapper);
+    }
+
+    public List<UserPO> qryByLambdaCondition04() {
+        LambdaQueryWrapper<UserPO> userPOQueryWrapper = new LambdaQueryWrapper<UserPO>()
+                .select(UserPO::getId, UserPO::getName, UserPO::getAddr)
+                .like(UserPO::getName, "6")
+                .ge(UserPO::getId, 100);
+        // 查询
+        return userMapper.selectList(userPOQueryWrapper);
+    }
+
+    public void updateBalanceByDiySql() {
+        LambdaQueryWrapper<UserPO> userPOQueryWrapper = new LambdaQueryWrapper<UserPO>()
+                .in(UserPO::getId, List.of(4, 5, 6));
+        // 更新
+        userMapper.updateBalance(userPOQueryWrapper, new BigDecimal("500"));
+    }
 }

@@ -1,0 +1,40 @@
+package com.tom.study.mybatisplustest.application.user.service;
+
+import com.tom.study.mybatisplustest.appilcation.user.service.MyBatisPlusUserService;
+import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
+
+/**
+ * @author Tom
+ * @version 1.0.0
+ * @ClassName UserAppService.java
+ * @Description TODO
+ * @createTime 2025年03月04日 08:32:00
+ */
+@SpringBootTest
+public class MyBatisPlusUserServiceTest {
+
+    @Autowired
+    private MyBatisPlusUserService userService;
+
+    @Test
+    void testSaveUser() {
+        UserPO userPO = new UserPO();
+        userPO.setId(123001L);
+        userPO.setName("张三001");
+        userPO.setMobilePhone("19912340001");
+        userPO.setAddr("成都天府五街001号");
+        userService.save(userPO);
+    }
+
+    @Test
+    void testQuery() {
+        List<UserPO> userPOS = userService.listByIds(List.of(1, 2, 3, 4));
+        System.out.println(userPOS);
+    }
+
+}

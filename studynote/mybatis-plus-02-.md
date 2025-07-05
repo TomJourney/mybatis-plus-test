@@ -297,7 +297,125 @@ public interface UserMapper extends BaseMapper<UserPO> {
 
 1）MyBatisPlus提供的IService接口：自定义多个增删改查方法api；
 
-## 【5.1】
+- ServiceImpl 实现了 IService，业务逻辑可以不用实现IService，而继承ServiceImpl ；因为实现IService，需要重写其所有方法，非常麻烦；
+
+## 【5.1】继承ServiceImpl 类
+
+### 【5.1.1】使用ServiceImpl接口更新用户余额
+
+```java
+public interface UserMapper extends BaseMapper<UserPO> {
+
+    void updateBalance(@Param("ew") LambdaQueryWrapper<UserPO> wrapper, @Param("balance") BigDecimal balance);
+}
+
+// 继承MybatisPlus的ServiceImpl，ServiceImpl实现了MybatisPlus的IService接口
+@Service
+public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
+
+}
+
+// 单元测试
+@SpringBootTest
+public class MyBatisPlusUserServiceTest {
+
+    @Autowired
+    private MyBatisPlusUserService userService;
+
+    @Test
+    void testSaveUser() {
+        UserPO userPO = new UserPO();
+        userPO.setId(123001L);
+        userPO.setName("张三001");
+        userPO.setMobilePhone("19912340001");
+        userPO.setAddr("成都天府五街001号");
+        userService.save(userPO);
+    }
+
+}
+```
+
+【代码说明】
+
+- UserMapper 仅继承BaseMapper，无需写其他代码； 
+- MyBatisPlusUserService 继承ServiceImpl，无需写其他代码；
+- 单元测试：调用MyBatisPlusUserService.save()方法，实际上调用的是ServiceImpl.save()方法；
+
+
+
+【sql运行日志】
+
+```c++
+==>  Preparing: INSERT INTO user_tbl ( id, name, mobile_phone, addr ) VALUES ( ?, ?, ?, ? )
+==> Parameters: 123001(Long), 张三001(String), 19912340001(String), 成都天府五街001号(String)
+<==    Updates: 1
+```
+
+【补充】MyBatisPlus-ServiceImpl代码结构；
+
+```java
+// 业务service
+@Service
+public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
+}
+
+// MyBatisPlus的ServiceImpl定义，继承CrudRepository,并实现IService
+public class ServiceImpl<M extends BaseMapper<T>, T> extends CrudRepository<M, T> implements IService<T> {
+    public ServiceImpl() {
+    }
+}
+
+// MybatisPlus-IService定义，继承 IRepository 
+public interface IService<T> extends IRepository<T> {
+    @Transactional(
+        rollbackFor = {Exception.class}
+    )
+    default boolean saveBatch(Collection<T> entityList) {
+        return this.saveBatch(entityList, 1000);
+    }
+
+    @Transactional(
+        rollbackFor = {Exception.class}
+    )
+    default boolean saveOrUpdateBatch(Collection<T> entityList) {
+        return this.saveOrUpdateBatch(entityList, 1000);
+    }
+
+    @Transactional(
+        rollbackFor = {Exception.class}
+    )
+    default boolean removeBatchByIds(Collection<?> list) {
+        return this.removeByIds(list);
+    }
+
+    @Transactional(
+        rollbackFor = {Exception.class}
+    )
+    default boolean updateBatchById(Collection<T> entityList) {
+        return this.updateBatchById(entityList, 1000);
+    }
+}
+
+// IRepository 定义：
+public interface IRepository<T> {
+    int DEFAULT_BATCH_SIZE = 1000;
+
+    default boolean save(T entity) {
+        return SqlHelper.retBool(this.getBaseMapper().insert(entity));
+    }
+
+    boolean saveBatch(Collection<T> entityList, int batchSize);
+
+    boolean saveOrUpdateBatch(Collection<T> entityList, int batchSize);
+    // 增删改查api... 
+}
+```
+
+<br>
+
+---
+
+### 【5.1.2】使用ServiceImpl接口查询用户信息
 
 
 

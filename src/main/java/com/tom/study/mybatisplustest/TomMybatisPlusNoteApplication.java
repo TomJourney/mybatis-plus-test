@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @createTime 2024年12月01日 16:17:00
  */
 @SpringBootApplication
-@MapperScan(basePackages = {"com.mybatisplustest.infrastructure.dao"})
+@MapperScan(basePackages = {"com.tom.study.mybatisplustest.infrastructure.dao"})
 public class TomMybatisPlusNoteApplication {
 
     public static void main(String[] args) {

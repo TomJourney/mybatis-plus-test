@@ -417,9 +417,39 @@ public interface IRepository<T> {
 
 ### 【5.1.2】使用ServiceImpl接口查询用户信息
 
+【测试案例】
 
+```java
+@Test
+void testQuery() {
+    List<UserPO> userPOS = userService.listByIds(List.of(1, 2, 3, 4));
+    System.out.println(userPOS);
+}
 
+```
 
+【sql日志】
+
+```c++
+==>  Preparing: SELECT id,name,mobile_phone,addr FROM user_tbl WHERE id IN ( ? , ? , ? , ? )
+==> Parameters: 1(Integer), 2(Integer), 3(Integer), 4(Integer)
+<==    Columns: id, name, mobile_phone, addr
+<==        Row: 1, user1, 17608012701, 成都天府三街101号
+<==        Row: 2, user2, 110, 成都天府四街401号
+<==        Row: 3, user3, 17608012703, 成都天府三街103号
+<==        Row: 4, user4, 17608012704, 成都天府三街104号
+<==      Total: 4
+```
+
+<br>
+
+---
+
+## 【5.2】基于restful风格实现下列接口
+
+1）需求： 基于restful实现下面接口：
+
+![image-20250706071319161](D:\studynote\07-mybatisplus\mybatis-plus-test\studynote\pic\02\0202.png)
 
 
 

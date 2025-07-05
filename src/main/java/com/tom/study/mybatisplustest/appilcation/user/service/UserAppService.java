@@ -1,7 +1,7 @@
-package com.mybatisplustest.appilcation.user.service;
+package com.tom.study.mybatisplustest.appilcation.user.service;
 
-import com.mybatisplustest.infrastructure.dao.user.mapper.UserMapper;
-import com.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
+import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserMapper;
+import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

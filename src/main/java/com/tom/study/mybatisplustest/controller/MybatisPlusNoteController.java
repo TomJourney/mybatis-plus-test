@@ -1,16 +1,14 @@
-package com.mybatisplustest.controller;
+package com.tom.study.mybatisplustest.controller;
 
-import com.mybatisplustest.appilcation.user.service.UserAppService;
-import com.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
+import com.tom.study.mybatisplustest.appilcation.user.service.UserAppService;
+import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Tom
  * @version 1.0.0
- * @ClassName SpringbootRedisController.java
- * @Description TODO
- * @createTime 2024年12月01日 16:18:00
+ * @ClassName MybatisPlusNoteController.java
  */
 @RestController
 @RequestMapping("/mybatis-plus-note")

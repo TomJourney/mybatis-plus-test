@@ -1,4 +1,4 @@
-package com.mybatisplustest.infrastructure.dao.user.mapper;
+package com.tom.study.mybatisplustest.infrastructure.dao.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 

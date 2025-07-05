@@ -11,11 +11,11 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>com.tom.springnote</groupId>
+  <groupId>com.tom.study</groupId>
   <artifactId>mybatis-plus-test</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>mybatis-plus-test</name>
-  <description>springboot-discover-tx</description>
+  <description>mybatis-plus-test</description>
   <url/>
 
   <properties>
@@ -66,7 +66,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- mybatis conf -->
+    <!-- mybatis conf （新增mybatis-plus-boot-starter依赖，需要把mybatis-spring-boot-starter注释或删除，否则报包冲突）-->
     <!--    <dependency>-->
     <!--      <groupId>org.mybatis.spring.boot</groupId>-->
     <!--      <artifactId>mybatis-spring-boot-starter</artifactId>-->

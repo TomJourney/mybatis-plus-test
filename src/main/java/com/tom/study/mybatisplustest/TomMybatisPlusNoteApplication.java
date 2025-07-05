@@ -1,6 +1,5 @@
-package com.mybatisplustest;
+package com.tom.study.mybatisplustest;
 
-import com.mybatisplustest.infrastructure.dao.user.mapper.UserMapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

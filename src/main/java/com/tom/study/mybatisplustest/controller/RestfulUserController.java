@@ -60,4 +60,9 @@ public class RestfulUserController {
         List<UserPO> userPOList = myBatisPlusUserService.queryUserByMultiCondition(userQueryDTO);
         return userConverter.toUserVOList(userPOList);
     }
+
+    @PutMapping("/{id}/usingLambdaDeductBalanceById/{money}")
+    public void usingLambdaDeductBalanceById(@PathVariable("id") long id, @PathVariable("money")BigDecimal money) {
+        myBatisPlusUserService.usingLambdaDeductBalance(id, money);
+    }
 }

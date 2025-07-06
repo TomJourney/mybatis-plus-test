@@ -1,6 +1,5 @@
 package com.tom.study.mybatisplustest.appilcation.user.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tom.study.mybatisplustest.appilcation.user.dto.UserQueryDTO;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserMapper;
@@ -56,4 +55,27 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
     }
 
 
+    public void usingLambdaDeductBalance(long id, BigDecimal money) {
+        // 1 查询用户
+        UserPO userPO = this.getById(id);
+        // 2 校验用户状态
+        if (Objects.isNull(userPO) || "0".equals(userPO.getUserState())) {
+            throw new RuntimeException("用户状态异常");
+        }
+        // 3 校验余额是否充足
+        if (userPO.getBalance().compareTo(money) < 0) {
+            throw new RuntimeException("用户余额不足");
+        }
+
+        // 4 使用lambda表达式扣减余额 update table set balance = balance - money where id = #{id}
+        BigDecimal reducedBalance = userPO.getBalance().subtract(money);
+        lambdaUpdate()
+                .set(UserPO::getBalance, reducedBalance)
+                .set(reducedBalance.equals(BigDecimal.ZERO), UserPO::getUserState, 0)
+                .eq(UserPO::getId, id)
+                .update();
+//        ==>  Preparing: UPDATE user_tbl SET balance=? WHERE (id = ?)
+           // ==> Parameters: 0.00(BigDecimal), 10000(Long)
+//                <==    Updates: 1
+    }
 }

@@ -3,7 +3,7 @@ package com.tom.study.mybatisplustest.controller;
 import com.tom.study.mybatisplustest.adapter.user.vo.UserVO;
 import com.tom.study.mybatisplustest.appilcation.user.dto.UserFormDTO;
 import com.tom.study.mybatisplustest.appilcation.user.service.MyBatisPlusUserService;
-import com.tom.study.mybatisplustest.infrastructure.converter.MapStructUserConverter;
+import com.tom.study.mybatisplustest.infrastructure.converter.UserConverter;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +24,11 @@ public class RestfulUserController {
 
     private final MyBatisPlusUserService myBatisPlusUserService;
 
-    private final MapStructUserConverter mapStructUserConverter;
+    private final UserConverter userConverter;
 
     @PostMapping(path = "/saveUser", consumes = "application/json")
     public void saveUser(@RequestBody UserFormDTO userFormDTO) {
-        myBatisPlusUserService.save(mapStructUserConverter.toUserPO(userFormDTO));
+        myBatisPlusUserService.save(userConverter.toUserPO(userFormDTO));
     }
 
     @DeleteMapping(path = "/deleteUser/{id}", consumes = "application/json")
@@ -39,13 +39,13 @@ public class RestfulUserController {
     @GetMapping(path = "/queryUserById/{id}", consumes = "application/json")
     public UserVO queryUserById(@PathVariable("id") Long id) {
         UserPO userPO = myBatisPlusUserService.getById(id);
-        return mapStructUserConverter.toUserVO(userPO);
+        return userConverter.toUserVO(userPO);
     }
 
     @GetMapping(path = "/queryUserByIds/{ids}", consumes = "application/json")
     public List<UserVO> queryUserByIds(@PathVariable("ids") List<Long> ids) {
         List<UserPO> userPOList = myBatisPlusUserService.listByIds(ids);
-        return mapStructUserConverter.toUserVOList(userPOList);
+        return userConverter.toUserVOList(userPOList);
     }
 
 

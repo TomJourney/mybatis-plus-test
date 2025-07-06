@@ -17,7 +17,7 @@ import java.util.List;
  * @createTime 2025年07月06日 07:33:00
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface MapStructUserConverter {
+public interface UserConverter {
 
     UserPO toUserPO(UserFormDTO userFormDTO);
 

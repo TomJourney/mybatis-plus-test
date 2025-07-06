@@ -42,11 +42,9 @@ public class RestfulUserController {
         return userConverter.toUserVO(userPO);
     }
 
-    @GetMapping(path = "/queryUserByIds/{ids}", consumes = "application/json")
-    public List<UserVO> queryUserByIds(@PathVariable("ids") List<Long> ids) {
+    @GetMapping(path = "/queryUserByIds", consumes = "application/json")
+    public List<UserVO> queryUserByIds(@RequestParam("ids") List<Long> ids) {
         List<UserPO> userPOList = myBatisPlusUserService.listByIds(ids);
         return userConverter.toUserVOList(userPOList);
     }
-
-
 }

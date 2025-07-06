@@ -451,9 +451,100 @@ void testQuery() {
 
 ![image-20250706071319161](D:\studynote\07-mybatisplus\mybatis-plus-test\studynote\pic\02\0202.png)
 
+<br>
 
+---
 
+### 【5.2.1】restfulApi使用MyBatisPlus(无需编写业务dao，自定义业务service继承MyBatisPlus-ServiceImpl即可)
 
+【RestfulUserController】restful风格的用户控制器
 
+```java
+@RestController
+@RequestMapping("/restful/user")
+@RequiredArgsConstructor
+public class RestfulUserController {
 
+    private final MyBatisPlusUserService myBatisPlusUserService;
+
+    private final UserConverter userConverter;
+
+    @PostMapping(path = "/saveUser", consumes = "application/json")
+    public void saveUser(@RequestBody UserFormDTO userFormDTO) {
+        myBatisPlusUserService.save(userConverter.toUserPO(userFormDTO));
+    }
+
+    @DeleteMapping(path = "/deleteUser/{id}", consumes = "application/json")
+    public void deleteUser(@PathVariable("id") Long id) {
+        myBatisPlusUserService.removeById(id);
+    }
+
+    @GetMapping(path = "/queryUserById/{id}", consumes = "application/json")
+    public UserVO queryUserById(@PathVariable("id") Long id) {
+        UserPO userPO = myBatisPlusUserService.getById(id);
+        return userConverter.toUserVO(userPO);
+    }
+
+    @GetMapping(path = "/queryUserByIds", consumes = "application/json")
+    public List<UserVO> queryUserByIds(@RequestParam("ids") List<Long> ids) {
+        List<UserPO> userPOList = myBatisPlusUserService.listByIds(ids);
+        return userConverter.toUserVOList(userPOList);
+    }
+}
+```
+
+【MyBatisPlusUserService】
+
+自定义service继承ServiceImpl，ServiceImpl由MyBatisPlus提供，其实现了IService的所有增删改查接口；
+
+```java
+@Service
+public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
+}
+```
+
+【UserConverter】pojo转换器(采用MapStruct工具)
+
+```java
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface UserConverter {
+
+    UserPO toUserPO(UserFormDTO userFormDTO);
+
+    UserFormDTO toUserFormDTO(UserPO userPO);
+
+    UserVO toUserVO(UserPO userPO);
+
+    List<UserVO> toUserVOList(List<UserPO> userPOList);
+}
+```
+
+<br>
+
+---
+
+【请求url】
+
+根据id查询：localhost:8081/restful/user/queryUserById/1
+
+保存：localhost:8081/restful/user/saveUser
+
+```json
+{
+    "id": 100,
+    "name": "user100",
+    "mobilePhone": "17712340100",
+    "addr": "成都天府三街100号"
+}
+```
+
+删除：localhost:8081/restful/user/deleteUser/100
+
+根据id列表查询：localhost:8081/restful/user/queryUserByIds?ids=110,111
+
+<br>
+
+---
+
+## 【5.3】
 

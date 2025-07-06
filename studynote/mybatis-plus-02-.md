@@ -546,5 +546,93 @@ public interface UserConverter {
 
 ---
 
-## 【5.3】
+## 【5.3】自定义用户Mapper（ServiceImpl无法满足复杂业务逻辑的情况）
+
+### 【5.3.1】代码实现 
+
+【RestfulUserController】 控制器层 
+
+```java
+@RestController
+@RequestMapping("/restful/user")
+@RequiredArgsConstructor
+public class RestfulUserController {
+
+    private final MyBatisPlusUserService myBatisPlusUserService;
+
+    private final UserConverter userConverter;
+
+    @PutMapping("/{id}/deductBalanceById/{money}")
+    public void deductBalanceById(@PathVariable("id") long id, @PathVariable("money")BigDecimal money) {
+        myBatisPlusUserService.deductBalance(id, money);
+    }
+}
+```
+
+【MyBatisPlusUserService】
+
+```java
+@Service
+public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
+    public void deductBalance(long id, BigDecimal money) {
+        // 1 查询用户
+        UserPO userPO = this.getById(id);
+        // 2 校验用户状态
+        if (Objects.isNull(userPO) || "0".equals(userPO.getUserState())) {
+            throw new RuntimeException("用户状态异常");
+        }
+        // 3 校验余额是否充足
+        if (userPO.getBalance().compareTo(money) < 0) {
+            throw new RuntimeException("用户余额不足");
+        }
+        // 4 扣减余额 update table set balance = balance - money where id = #{id}
+        baseMapper.updateBalanceV2(id, money);
+        //    ==>  Preparing: update user_tbl set balance = balance - ? where id = ?
+        //            ==> Parameters: 150(BigDecimal), 1000(Long)
+        //            <==    Updates: 1
+    }
+}
+```
+
+【UserMapper】自定义mapper方法 
+
+```java
+public interface UserMapper extends BaseMapper<UserPO> {
+
+    void updateBalance(@Param(Constants.WRAPPER) LambdaQueryWrapper<UserPO> wrapper, @Param("balance") BigDecimal balance);
+
+    @Update("update user_tbl set balance = balance - #{money} where id = #{id}")
+    void updateBalanceV2(@Param("id") long id, @Param("money") BigDecimal money);
+}
+```
+
+<br>
+
+---
+
+### 【5.3.2】测试效果
+
+路径：localhost:8081/restful/user/1000/deductBalanceById/150
+
+方法：PUT
+
+<br>
+
+---
+
+# 【6】IService的lambda方法
+
+1）业务场景：实现一个根据复杂条件查询用户的接口， 查询条件如下：根据用户名，用户状态，余额范围查询；上述3个字段，为空则跳过，不为空才作为查询条件；
+
+
+
+
+
+
+
+
+
+
+
+
 

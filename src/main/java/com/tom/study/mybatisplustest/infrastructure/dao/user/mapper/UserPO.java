@@ -28,4 +28,6 @@ public class UserPO {
     private String addr;
 
     private BigDecimal balance;
+
+    private String userState;
 }

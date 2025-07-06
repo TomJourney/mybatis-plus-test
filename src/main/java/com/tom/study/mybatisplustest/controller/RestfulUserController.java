@@ -8,6 +8,7 @@ import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -46,5 +47,10 @@ public class RestfulUserController {
     public List<UserVO> queryUserByIds(@RequestParam("ids") List<Long> ids) {
         List<UserPO> userPOList = myBatisPlusUserService.listByIds(ids);
         return userConverter.toUserVOList(userPOList);
+    }
+
+    @PutMapping("/{id}/deductBalanceById/{money}")
+    public void deductBalanceById(@PathVariable("id") long id, @PathVariable("money")BigDecimal money) {
+        myBatisPlusUserService.deductBalance(id, money);
     }
 }

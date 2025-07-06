@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
 
@@ -16,7 +17,8 @@ import java.math.BigDecimal;
  */
 public interface UserMapper extends BaseMapper<UserPO> {
 
-    void updateBalance(@Param("ew") LambdaQueryWrapper<UserPO> wrapper, @Param("balance") BigDecimal balance);
+    void updateBalance(@Param(Constants.WRAPPER) LambdaQueryWrapper<UserPO> wrapper, @Param("balance") BigDecimal balance);
 
-//    void updateBalance2(@Param(Constants.WRAPPER) LambdaQueryWrapper<UserPO> wrapper, @Param("balance") BigDecimal balance);
+    @Update("update user_tbl set balance = balance - #{money} where id = #{id}")
+    void updateBalanceV2(@Param("id") long id, @Param("money") BigDecimal money);
 }

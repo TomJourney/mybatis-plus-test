@@ -23,4 +23,6 @@ public class UserVO {
     private String addr;
 
     private BigDecimal balance;
+
+    private String userState;
 }

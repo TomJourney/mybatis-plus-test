@@ -23,4 +23,6 @@ public class UserFormDTO {
     private String addr;
 
     private BigDecimal balance;
+
+    private String userState;
 }

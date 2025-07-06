@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @author Tom
  * @version 1.0.0
@@ -24,4 +26,6 @@ public class UserPO {
     private String mobilePhone;
 
     private String addr;
+
+    private BigDecimal balance;
 }

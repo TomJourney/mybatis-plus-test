@@ -434,10 +434,10 @@ void testQuery() {
 ==>  Preparing: SELECT id,name,mobile_phone,addr FROM user_tbl WHERE id IN ( ? , ? , ? , ? )
 ==> Parameters: 1(Integer), 2(Integer), 3(Integer), 4(Integer)
 <==    Columns: id, name, mobile_phone, addr
-<==        Row: 1, user1, 17608012701, 成都天府三街101号
+<==        Row: 1, user1, 17612342701, 成都天府三街101号
 <==        Row: 2, user2, 110, 成都天府四街401号
-<==        Row: 3, user3, 17608012703, 成都天府三街103号
-<==        Row: 4, user4, 17608012704, 成都天府三街104号
+<==        Row: 3, user3, 17612342703, 成都天府三街103号
+<==        Row: 4, user4, 17612342704, 成都天府三街104号
 <==      Total: 4
 ```
 

@@ -2,6 +2,7 @@ package com.tom.study.mybatisplustest.controller;
 
 import com.tom.study.mybatisplustest.adapter.user.vo.UserVO;
 import com.tom.study.mybatisplustest.appilcation.user.dto.UserFormDTO;
+import com.tom.study.mybatisplustest.appilcation.user.dto.UserQueryDTO;
 import com.tom.study.mybatisplustest.appilcation.user.service.MyBatisPlusUserService;
 import com.tom.study.mybatisplustest.infrastructure.converter.UserConverter;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
@@ -52,5 +53,11 @@ public class RestfulUserController {
     @PutMapping("/{id}/deductBalanceById/{money}")
     public void deductBalanceById(@PathVariable("id") long id, @PathVariable("money")BigDecimal money) {
         myBatisPlusUserService.deductBalance(id, money);
+    }
+
+    @PostMapping(path = "/queryUserByMultiCondition", consumes = "application/json")
+    public List<UserVO> queryUserByMultiCondition(@RequestBody UserQueryDTO userQueryDTO) {
+        List<UserPO> userPOList = myBatisPlusUserService.queryUserByMultiCondition(userQueryDTO);
+        return userConverter.toUserVOList(userPOList);
     }
 }

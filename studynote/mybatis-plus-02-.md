@@ -622,9 +622,86 @@ public interface UserMapper extends BaseMapper<UserPO> {
 
 # 【6】IService的lambda方法
 
-1）业务场景：实现一个根据复杂条件查询用户的接口， 查询条件如下：根据用户名，用户状态，余额范围查询；上述3个字段，为空则跳过，不为空才作为查询条件；
+## 【6.1】IService-lambda方法实现多条件复杂查询
+
+业务场景：实现一个根据复杂条件查询用户的接口， 查询条件如下：根据用户名，用户状态，余额范围查询；上述3个查询字段，为空则跳过，不为空才作为查询条件；
+
+【RestfulUserController】
+
+```java
+@RestController
+@RequestMapping("/restful/user")
+@RequiredArgsConstructor
+public class RestfulUserController {
+
+    private final MyBatisPlusUserService myBatisPlusUserService;
+
+    private final UserConverter userConverter;
+
+    @PostMapping(path = "/queryUserByMultiCondition", consumes = "application/json")
+    public List<UserVO> queryUserByMultiCondition(@RequestBody UserQueryDTO userQueryDTO) {
+        List<UserPO> userPOList = myBatisPlusUserService.queryUserByMultiCondition(userQueryDTO);
+        return userConverter.toUserVOList(userPOList);
+    }
+}
+```
+
+【MyBatisPlusUserService】
+
+```java
+@Service
+public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
+        public List<UserPO> queryUserByMultiCondition(UserQueryDTO userQueryDTO) {
+        return lambdaQuery()
+                .like(userQueryDTO.getName() != null, UserPO::getName, userQueryDTO.getName())
+                .eq(userQueryDTO.getUserState() != null, UserPO::getUserState, userQueryDTO.getUserState())
+                .gt(userQueryDTO.getMinBalance() != null, UserPO::getBalance, userQueryDTO.getMinBalance())
+                .lt(userQueryDTO.getMaxBalance() != null, UserPO::getBalance, userQueryDTO.getMaxBalance())
+                .list();
+
+//        ==>  Preparing: SELECT id,name,mobile_phone,addr,balance,user_state FROM user_tbl WHERE (name LIKE ? AND user_state = ? AND balance > ? AND balance < ?)
+//               ==> Parameters: %user10%(String), 1(String), 5(BigDecimal), 20000(BigDecimal)
+//                <==    Columns: id, name, mobile_phone, addr, balance, user_state
+//                <==        Row: 10, user10, 17712340010, 成都天府三街010号, 6.00, 1
+//                <==        Row: 110, user101, 17612341010, 成都市天府大道110号, 16.00, 1
+//                <==        Row: 1000, user1000, 17712341000, 成都天府三街1000号, 850.00, 1
+//                <==      Total: 3
+    }
 
 
+}
+```
+
+<br>
+
+---
+
+### 【6.1.1】测试用例
+
+路径：localhost:8081/restful/user/queryUserByMultiCondition
+
+报文：
+
+```json
+{
+    "name": "user10",
+    "userState": "1",
+    "minBalance": "5",
+    "maxBalance": "20000"
+}
+```
+
+<br>
+
+---
+
+## 【6.2】通过IService-Lambda方法改造根据id扣减用户余额
+
+1）业务场景如下：
+
+- 对用户状态校验，仅修改user_state=1的用户的余额；
+- 对用户余额校验，若余额小于扣减额，则不允许扣减；
+- 如果扣减后余额为0，则将用户state修改为0（不可用状态）
 
 
 

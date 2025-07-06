@@ -2,11 +2,13 @@ package com.tom.study.mybatisplustest.appilcation.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tom.study.mybatisplustest.appilcation.user.dto.UserQueryDTO;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserMapper;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -35,4 +37,23 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
         //            ==> Parameters: 150(BigDecimal), 1000(Long)
         //            <==    Updates: 1
     }
+
+    public List<UserPO> queryUserByMultiCondition(UserQueryDTO userQueryDTO) {
+        return lambdaQuery()
+                .like(userQueryDTO.getName() != null, UserPO::getName, userQueryDTO.getName())
+                .eq(userQueryDTO.getUserState() != null, UserPO::getUserState, userQueryDTO.getUserState())
+                .gt(userQueryDTO.getMinBalance() != null, UserPO::getBalance, userQueryDTO.getMinBalance())
+                .lt(userQueryDTO.getMaxBalance() != null, UserPO::getBalance, userQueryDTO.getMaxBalance())
+                .list();
+
+//        ==>  Preparing: SELECT id,name,mobile_phone,addr,balance,user_state FROM user_tbl WHERE (name LIKE ? AND user_state = ? AND balance > ? AND balance < ?)
+//               ==> Parameters: %user10%(String), 1(String), 5(BigDecimal), 20000(BigDecimal)
+//                <==    Columns: id, name, mobile_phone, addr, balance, user_state
+//                <==        Row: 10, user10, 17712340010, 成都天府三街010号, 6.00, 1
+//                <==        Row: 110, user101, 17612341010, 成都市天府大道110号, 16.00, 1
+//                <==        Row: 1000, user1000, 17712341000, 成都天府三街1000号, 850.00, 1
+//                <==      Total: 3
+    }
+
+
 }

@@ -117,6 +117,90 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
 }
 ```
 
+### 【查询单个用户的访问效果】
+
+地址：get  localhost:8081/staticdb/restful/user/queryUserById/1 
+
+```c++
+{
+    "id": 1,
+    "name": "user1",
+    "mobilePhone": "17612342701",
+    "addr": "成都天府三街101号",
+    "balance": 1.00,
+    "userState": "1",
+    "userAddrVOList": [
+        {
+            "id": 1,
+            "userId": 1,
+            "addrInfo": "成都高新区大学路1号",
+            "addrType": "UNVS"
+        },
+        {
+            "id": 3,
+            "userId": 1,
+            "addrInfo": "成都高新区大学路学府家园",
+            "addrType": "HOME"
+        }
+    ]
+}
+```
+
+
+
+### 【查询多个用户的访问效果】
+
+地址：get localhost:8081/staticdb/restful/user/queryUserByIds?ids=1,2 
+
+```c++
+[
+    {
+        "id": 1,
+        "name": "user1",
+        "mobilePhone": "17612342701",
+        "addr": "成都天府三街101号",
+        "balance": 1.00,
+        "userState": "1",
+        "userAddrVOList": [
+            {
+                "id": 1,
+                "userId": 1,
+                "addrInfo": "成都高新区大学路1号",
+                "addrType": "UNVS"
+            },
+            {
+                "id": 3,
+                "userId": 1,
+                "addrInfo": "成都高新区大学路学府家园",
+                "addrType": "HOME"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "user2",
+        "mobilePhone": "110",
+        "addr": "成都天府四街401号",
+        "balance": 2.00,
+        "userState": "0",
+        "userAddrVOList": [
+            {
+                "id": 4,
+                "userId": 2,
+                "addrInfo": "成都高新区大学路学府家园201号",
+                "addrType": "HOME"
+            },
+            {
+                "id": 5,
+                "userId": 2,
+                "addrInfo": "成都高新区大学路学府家园202号",
+                "addrType": "HOME"
+            }
+        ]
+    }
+]
+```
+
 <br>
 
 ---

@@ -37,7 +37,6 @@
 
 - 需求1：改造根据id查询用户的接口，查询用户的同时，也查询用户对应地址；
 - 需求2：改造根据id批量查询用户的接口，查询用户的同时，查询批量用户对应的地址；
-- 需求3：新实现根据id查询用户大学地址功能，若用户状态为不可用（userState=0），则抛出异常；
 
 <br>
 
@@ -205,9 +204,27 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
 
 ---
 
-## 【2.3】使用MyBatisPlus的DB静态工具判断用户状态
+# 【3】逻辑删除
+
+202507070700
 
 
+
+<br>
+
+---
+
+# 【4】枚举处理器
+
+
+
+
+
+<br>
+
+---
+
+# 【5】JSON处理器
 
 
 

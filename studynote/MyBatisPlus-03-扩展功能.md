@@ -43,9 +43,85 @@
 
 ---
 
-## 【2.1】使用MyBatisPlus的DB静态工具查询用户地址
+## 【2.1】使用MyBatisPlus的DB静态工具查询单个及多个用户地址
 
+【UseStaticApiRestfulUserController】
 
+```python
+@RestController
+@RequestMapping("/staticdb/restful/user")
+@RequiredArgsConstructor
+public class UseStaticApiRestfulUserController {
+
+    private final MyBatisPlusUserService myBatisPlusUserService;
+
+    private final UserConverter userConverter;
+
+   // 查询单个 
+    @GetMapping(path = "/queryUserById/{id}", consumes = "application/json")
+    public UserVO queryUserById(@PathVariable("id") Long id) {
+        return myBatisPlusUserService.queryUserAndAddrById(id);
+    }
+
+    // 查询多个 
+    @GetMapping(path = "/queryUserByIds", consumes = "application/json")
+    public List<UserVO> queryUserByIds(@RequestParam("ids") List<Long> ids) {
+        return myBatisPlusUserService.queryUserAndAddrById(ids);
+    }
+}
+```
+
+【MyBatisPlusUserService】
+
+```java
+@Service
+@RequiredArgsConstructor
+public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
+
+    private final UserConverter userConverter;
+    private final UserAddrConverter userAddrConverter;    
+
+    // 使用MyBatisPlus的DB工具查询单个用户地址
+    public UserVO queryUserAndAddrById(Long id) {
+        // 1 查询用户
+        UserPO userPO = getById(id);
+        // 2 查询地址
+        List<UserAddrPO> userAddrPOList = Db.lambdaQuery(UserAddrPO.class).eq(UserAddrPO::getUserId, id).list();
+        UserVO userVO = userConverter.toUserVO(userPO);
+        // 3 封装地址到用户
+        if (!CollectionUtils.isEmpty(userAddrPOList)) {
+            userVO.setUserAddrVOList(userAddrConverter.toUserAddrVOList(userAddrPOList));
+        }
+        return userVO;
+    }
+    
+    // 使用MyBatisPlus的DB工具查询多个用户地址 
+    public List<UserVO> queryUserAndAddrById(List<Long> ids) {
+        // 1 查询用户列表
+        List<UserVO> userVOList = userConverter.toUserVOList(listByIds(ids));
+
+        // 2 查询地址列表
+        List<Long> dbUserIdList = userVOList.stream().map(UserVO::getId).collect(Collectors.toList());
+        List<UserAddrPO> userAddrPOList = Db.lambdaQuery(UserAddrPO.class).in(UserAddrPO::getUserId, dbUserIdList).list();
+        // 转为map，其中key为用户id，value为地址vo列表
+        Map<Long, List<UserAddrVO>> userIdToUserAddrVOsMap =
+                userAddrConverter.toUserAddrVOList(userAddrPOList).stream().collect(Collectors.groupingBy(UserAddrVO::getUserId));
+        // 3 封装地址到用户
+        if (!CollectionUtils.isEmpty(userVOList)) {
+            userVOList.forEach(userVO->{
+                userVO.setUserAddrVOList(userIdToUserAddrVOsMap.getOrDefault(userVO.getId(), Collections.emptyList()));
+            });
+        }
+        return userVOList;
+    }
+}
+```
+
+<br>
+
+---
+
+## 【2.3】使用MyBatisPlus的DB静态工具判断用户状态
 
 
 

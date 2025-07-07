@@ -2,6 +2,7 @@ package com.tom.study.mybatisplustest.appilcation.user.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
+import com.tom.study.mybatisplustest.adapter.user.vo.UserAddrVO;
 import com.tom.study.mybatisplustest.adapter.user.vo.UserVO;
 import com.tom.study.mybatisplustest.appilcation.user.dto.UserQueryDTO;
 import com.tom.study.mybatisplustest.infrastructure.converter.UserAddrConverter;
@@ -14,8 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Tom
@@ -102,5 +106,24 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
             userVO.setUserAddrVOList(userAddrConverter.toUserAddrVOList(userAddrPOList));
         }
         return userVO;
+    }
+
+    public List<UserVO> queryUserAndAddrById(List<Long> ids) {
+        // 1 查询用户列表
+        List<UserVO> userVOList = userConverter.toUserVOList(listByIds(ids));
+
+        // 2 查询地址列表
+        List<Long> dbUserIdList = userVOList.stream().map(UserVO::getId).collect(Collectors.toList());
+        List<UserAddrPO> userAddrPOList = Db.lambdaQuery(UserAddrPO.class).in(UserAddrPO::getUserId, dbUserIdList).list();
+        // 转为map，其中key为用户id，value为地址vo列表
+        Map<Long, List<UserAddrVO>> userIdToUserAddrVOsMap =
+                userAddrConverter.toUserAddrVOList(userAddrPOList).stream().collect(Collectors.groupingBy(UserAddrVO::getUserId));
+        // 3 封装地址到用户
+        if (!CollectionUtils.isEmpty(userVOList)) {
+            userVOList.forEach(userVO->{
+                userVO.setUserAddrVOList(userIdToUserAddrVOsMap.getOrDefault(userVO.getId(), Collections.emptyList()));
+            });
+        }
+        return userVOList;
     }
 }

@@ -33,7 +33,6 @@ public class UseStaticApiRestfulUserController {
 
     @GetMapping(path = "/queryUserByIds", consumes = "application/json")
     public List<UserVO> queryUserByIds(@RequestParam("ids") List<Long> ids) {
-        List<UserPO> userPOList = myBatisPlusUserService.listByIds(ids);
-        return userConverter.toUserVOList(userPOList);
+        return myBatisPlusUserService.queryUserAndAddrById(ids);
     }
 }

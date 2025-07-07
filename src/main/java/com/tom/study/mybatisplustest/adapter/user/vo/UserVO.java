@@ -3,6 +3,7 @@ package com.tom.study.mybatisplustest.adapter.user.vo;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Tom
@@ -25,4 +26,6 @@ public class UserVO {
     private BigDecimal balance;
 
     private String userState;
+
+    private List<UserAddrVO> userAddrVOList;
 }

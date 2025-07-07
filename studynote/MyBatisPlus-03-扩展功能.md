@@ -26,9 +26,24 @@
 
 # 【2】MyBatisPlus-DB静态工具
 
-1）引入DB静态工具的原因：IService仅用于spring单例bean，若是工具类，则无法使用IService或ServiceImpl的接口；所以引入DB静态工具，使得工具类也可以使用IService或ServiceImpl提供的快捷api（增删改查）； 
+1）引入DB静态工具的原因：
 
+- 原因1：IService仅用于spring单例bean，若是工具类，则无法使用IService或ServiceImpl的接口；
+- 原因2：若存在一个请求需要查询多张表，则可能存在IService实现类的springbean相互引用的问题；
 
+所以引入DB静态工具，使得工具类也可以使用MyBatisPlus提供的增删改查api； 
+
+2）业务需求：
+
+- 需求1：改造根据id查询用户的接口，查询用户的同时，也查询用户对应地址；
+- 需求2：改造根据id批量查询用户的接口，查询用户的同时，查询批量用户对应的地址；
+- 需求3：新实现根据id查询用户大学地址功能，若用户状态为不可用（userState=0），则抛出异常；
+
+<br>
+
+---
+
+## 【2.1】使用MyBatisPlus的DB静态工具查询用户地址
 
 
 

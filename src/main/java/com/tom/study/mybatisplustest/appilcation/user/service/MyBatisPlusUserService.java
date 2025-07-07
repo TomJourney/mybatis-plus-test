@@ -1,10 +1,17 @@
 package com.tom.study.mybatisplustest.appilcation.user.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
+import com.tom.study.mybatisplustest.adapter.user.vo.UserVO;
 import com.tom.study.mybatisplustest.appilcation.user.dto.UserQueryDTO;
+import com.tom.study.mybatisplustest.infrastructure.converter.UserAddrConverter;
+import com.tom.study.mybatisplustest.infrastructure.converter.UserConverter;
+import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserAddrPO;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserMapper;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,7 +25,12 @@ import java.util.Objects;
  * @createTime 2025年03月04日 08:32:00
  */
 @Service
+@RequiredArgsConstructor
 public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
+
+    private final UserConverter userConverter;
+    private final UserAddrConverter userAddrConverter;
+
     public void deductBalance(long id, BigDecimal money) {
         // 1 查询用户
         UserPO userPO = this.getById(id);
@@ -75,7 +87,20 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
                 .eq(UserPO::getId, id)
                 .update();
 //        ==>  Preparing: UPDATE user_tbl SET balance=? WHERE (id = ?)
-           // ==> Parameters: 0.00(BigDecimal), 10000(Long)
+        // ==> Parameters: 0.00(BigDecimal), 10000(Long)
 //                <==    Updates: 1
+    }
+
+    public UserVO queryUserAndAddrById(Long id) {
+        // 1 查询用户
+        UserPO userPO = getById(id);
+        // 2 查询地址
+        List<UserAddrPO> userAddrPOList = Db.lambdaQuery(UserAddrPO.class).eq(UserAddrPO::getUserId, id).list();
+        UserVO userVO = userConverter.toUserVO(userPO);
+        // 3 封装地址到用户
+        if (!CollectionUtils.isEmpty(userAddrPOList)) {
+            userVO.setUserAddrVOList(userAddrConverter.toUserAddrVOList(userAddrPOList));
+        }
+        return userVO;
     }
 }

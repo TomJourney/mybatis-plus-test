@@ -243,6 +243,23 @@ mybatis-plus:
 alter table mywarn.user_tbl add column `deleted` varchar(1) default '0' COMMENT '逻辑删除标记（1-已删除，0-未删除）';
 ```
 
+【新增字段后的ddl】
+
+```sql
+CREATE TABLE `user_tbl` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '用户名称',
+  `mobile_phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '移动电话',
+  `addr` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '地址',
+  `user_state` char(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '用户状态/ON-在线/OFF-离线',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_modify_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `balance` decimal(18,2) DEFAULT '0.00' COMMENT '余额',
+  `deleted` varchar(1) COLLATE utf8mb4_general_ci DEFAULT '0' COMMENT '逻辑删除标记（1-已删除，0-未删除）',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=123003 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表'
+```
+
 步骤2：<font color=red>为UserPO新增字段 deleted，否则逻辑删除丕生效（非常重要） </font>
 
 ```java
@@ -306,7 +323,108 @@ public class MyBatisPlusUserServiceTest {
 
 # 【4】枚举处理器
 
+官方文档参见： https://baomidou.com/guides/auto-convert-enum/ 
 
+1）业务场景：把user_tbl表中的用户状态user_state字段在po中用枚举类表示；
+
+- 具体的，MyBatisPlus的属性类型处理器MybatisEnumTypeHandler可以把属性值转为枚举类型，如把varchar转为enum类型；
+
+【MybatisEnumTypeHandler定义】
+
+```java
+public final class MybatisEnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
+ // ...   
+}
+// 其中 BaseTypeHandler是 ibatis定义的类型处理器基类
+```
+
+<br>
+
+---
+
+## 【4.1】代码实现
+
+步骤1：新增用户状态枚举类
+
+【UserStateEnum】
+
+```java
+@Getter
+@AllArgsConstructor
+public enum UserStateEnum {
+
+    ON("1", "在线"),
+    OFF("0", "离线");
+
+    @EnumValue
+    private final String value;
+    private final String desp;
+
+}
+```
+
+步骤2：配置枚举处理器：
+
+【application.yml】
+
+```yaml
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: deleted # 全局逻辑删除字段名
+      logic-delete-value: 1 # 逻辑已删除值。可选，默认值为 1
+      logic-not-delete-value: 0 # 逻辑未删除值。可选，默认值为 0
+  configuration:
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler # 基于枚举常量属性的处理器
+```
+
+步骤3：修改UserPO，把userState类型从string修改为 UserEnum；
+
+```java
+@Data
+@TableName("user_tbl")
+public class UserPO {
+
+    @TableId("id")
+    private Long id;
+
+    @TableField("name")
+    private String name;
+
+    private String mobilePhone;
+
+    private String addr;
+
+    private BigDecimal balance;
+
+//    private String userState;
+    private UserStateEnum userState;
+
+    private String deleted;
+}
+```
+
+【测试案例】 
+
+```java
+@SpringBootTest
+public class MyBatisPlusUserServiceTest {
+
+    @Autowired
+    private MyBatisPlusUserService userService;
+   
+    @Test
+    void testUserStateEnum() {
+        UserPO userPO = userService.getById(104L);
+        if (userPO.getUserState() == UserStateEnum.ON) {
+            System.out.println("用户在线");
+        } else {
+            System.out.println("用户离线");
+        }
+        // 用户在线
+    }
+}
+```
 
 
 

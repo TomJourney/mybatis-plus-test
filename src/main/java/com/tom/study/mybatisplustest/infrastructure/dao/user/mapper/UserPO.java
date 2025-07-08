@@ -3,6 +3,8 @@ package com.tom.study.mybatisplustest.infrastructure.dao.user.mapper;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler;
+import com.tom.study.mybatisplustest.infrastructure.common.enums.UserStateEnum;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -18,6 +20,7 @@ import java.util.List;
 @Data
 @TableName("user_tbl")
 public class UserPO {
+
     @TableId("id")
     private Long id;
 
@@ -30,7 +33,8 @@ public class UserPO {
 
     private BigDecimal balance;
 
-    private String userState;
+//    private String userState;
+    private UserStateEnum userState;
 
     private String deleted;
 }

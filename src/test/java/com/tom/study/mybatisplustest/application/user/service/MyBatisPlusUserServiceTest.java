@@ -1,6 +1,8 @@
 package com.tom.study.mybatisplustest.application.user.service;
 
+import com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler;
 import com.tom.study.mybatisplustest.appilcation.user.service.MyBatisPlusUserService;
+import com.tom.study.mybatisplustest.infrastructure.common.enums.UserStateEnum;
 import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +47,17 @@ public class MyBatisPlusUserServiceTest {
         // 查询
         UserPO userPO = userService.getById(id);
         System.out.println(userPO);
+    }
+
+    @Test
+    void testUserStateEnum() {
+        UserPO userPO = userService.getById(104L);
+        if (userPO.getUserState() == UserStateEnum.ON) {
+            System.out.println("用户在线");
+        } else {
+            System.out.println("用户离线");
+        }
+        MybatisEnumTypeHandler mybatisEnumTypeHandler;
+        // 用户在线
     }
 }

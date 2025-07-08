@@ -206,9 +206,99 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
 
 # 【3】逻辑删除
 
-202507070700
+使用文档参见： [https://baomidou.com/guides/logic-delete/](https://baomidou.com/guides/logic-delete/) 
 
+1）业务背景： 逻辑删除不会真正删除数据，而是用一个字段标记数据的删除状态；实现如下：
 
+- 在表中添加一个字段deleted标记数据是否被删除；逻辑删除时，deleted=1，否则等于0；
+- 查询时仅查询deleted=0的数据；
+
+2）相关sql：
+
+- 逻辑删除： update table set deleted=1 where deleted=0 and id = #{id}
+- 查询： select * from table where deleted=0
+
+<br>
+
+---
+
+## 【3.1】代码实现
+
+1）MyBatisPlus提供了逻辑删除，但需要以下配置。
+
+【application.yml】
+
+```yaml
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: deleted # 全局逻辑删除字段名
+      logic-delete-value: 1 # 逻辑已删除值。可选，默认值为 1
+      logic-not-delete-value: 0 # 逻辑未删除值。可选，默认值为 0
+```
+
+步骤1：为user_tbl表新增逻辑删除字段 deleted；
+
+```sql
+alter table mywarn.user_tbl add column `deleted` varchar(1) default '0' COMMENT '逻辑删除标记（1-已删除，0-未删除）';
+```
+
+步骤2：<font color=red>为UserPO新增字段 deleted，否则逻辑删除丕生效（非常重要） </font>
+
+```java
+@Data
+@TableName("user_tbl")
+public class UserPO {
+    @TableId("id")
+    private Long id;
+
+    @TableField("name")
+    private String name;
+
+    private String mobilePhone;
+
+    private String addr;
+
+    private BigDecimal balance;
+
+    private String userState;
+
+    private String deleted;
+}
+```
+
+步骤3：编写测试用例
+
+```java
+@SpringBootTest
+public class MyBatisPlusUserServiceTest {
+
+    @Autowired
+    private MyBatisPlusUserService userService;
+
+    @Test
+    void testLogicDelete() {
+        Long id = 103L;
+        // 删除
+        userService.removeById(id);
+        // 查询
+        UserPO userPO = userService.getById(id);
+        System.out.println(userPO);
+    }
+}
+```
+
+【sql执行日志】
+
+```c++
+==>  Preparing: UPDATE user_tbl SET deleted='1' WHERE id=? AND deleted='0'
+==> Parameters: 103(Long)
+<==    Updates: 1
+
+==>  Preparing: SELECT id,name,mobile_phone,addr,balance,user_state,deleted FROM user_tbl WHERE id=? AND deleted='0'
+==> Parameters: 103(Long)
+<==      Total: 0
+```
 
 <br>
 

@@ -31,4 +31,6 @@ public class UserPO {
     private BigDecimal balance;
 
     private String userState;
+
+    private String deleted;
 }

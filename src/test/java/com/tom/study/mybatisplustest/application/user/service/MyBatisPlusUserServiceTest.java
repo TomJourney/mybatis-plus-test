@@ -37,4 +37,13 @@ public class MyBatisPlusUserServiceTest {
         System.out.println(userPOS);
     }
 
+    @Test
+    void testLogicDelete() {
+        Long id = 103L;
+        // 删除
+        userService.removeById(id);
+        // 查询
+        UserPO userPO = userService.getById(id);
+        System.out.println(userPO);
+    }
 }

@@ -378,7 +378,7 @@ mybatis-plus:
     default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler # 基于枚举常量属性的处理器
 ```
 
-步骤3：修改UserPO，把userState类型从string修改为 UserEnum；
+步骤3：修改UserPO，把userState类型从string修改为 UserStateEnum；
 
 ```java
 @Data

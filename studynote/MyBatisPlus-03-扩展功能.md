@@ -485,6 +485,8 @@ public class UserPO {
 
 ```java
 @Data
+@NoArgsConstructor
+@AllArgsConstructor(staticName = "of") // 设定静态生成器方法
 public class UserInfoPO {
 
     private int age;

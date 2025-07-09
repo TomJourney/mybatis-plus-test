@@ -1,6 +1,8 @@
 package com.tom.study.mybatisplustest.infrastructure.dao.user.mapper;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Tom
@@ -10,6 +12,8 @@ import lombok.Data;
  * @createTime 2025年07月09日 21:36:00
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor(staticName = "of")
 public class UserInfoPO {
 
     private int age;

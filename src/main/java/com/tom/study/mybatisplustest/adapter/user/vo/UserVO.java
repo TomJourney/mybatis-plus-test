@@ -1,5 +1,7 @@
 package com.tom.study.mybatisplustest.adapter.user.vo;
 
+import com.tom.study.mybatisplustest.infrastructure.common.enums.UserStateEnum;
+import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserInfoPO;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -25,7 +27,9 @@ public class UserVO {
 
     private BigDecimal balance;
 
-    private String userState;
+    private UserStateEnum userState;
 
     private List<UserAddrVO> userAddrVOList;
+
+    private UserInfoPO info;
 }

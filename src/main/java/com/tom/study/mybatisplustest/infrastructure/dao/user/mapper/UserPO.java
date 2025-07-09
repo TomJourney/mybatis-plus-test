@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.tom.study.mybatisplustest.infrastructure.common.enums.UserStateEnum;
 import lombok.Data;
 
@@ -18,7 +19,7 @@ import java.util.List;
  * @createTime 2025年03月04日 06:45:00
  */
 @Data
-@TableName("user_tbl")
+@TableName(value = "user_tbl", autoResultMap = true)
 public class UserPO {
 
     @TableId("id")
@@ -37,4 +38,7 @@ public class UserPO {
     private UserStateEnum userState;
 
     private String deleted;
+
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private UserInfoPO info;
 }

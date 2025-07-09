@@ -18,7 +18,9 @@
 
 # 【1】基于MyBatisPlus的代码生成器
 
-方法1：使用代码生成代码（不推荐，仅参考），官方文档：[https://baomidou.com/guides/new-code-generator/](https://baomidou.com/guides/new-code-generator/)
+方法1：使用代码生成代码，官方文档：[https://baomidou.com/guides/new-code-generator/](https://baomidou.com/guides/new-code-generator/)
+
+或者使用MyBatisGenerator插件：[https://www.cnblogs.com/marEstrelado/articles/15930280.html](https://www.cnblogs.com/marEstrelado/articles/15930280.html)
 
 <br>
 
@@ -125,7 +127,7 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
     "id": 1,
     "name": "user1",
     "mobilePhone": "17612342701",
-    "addr": "成都天府三街101号",
+    "addr": "成都锦城三街101号",
     "balance": 1.00,
     "userState": "1",
     "userAddrVOList": [
@@ -157,7 +159,7 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
         "id": 1,
         "name": "user1",
         "mobilePhone": "17612342701",
-        "addr": "成都天府三街101号",
+        "addr": "成都锦城三街101号",
         "balance": 1.00,
         "userState": "1",
         "userAddrVOList": [
@@ -179,7 +181,7 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
         "id": 2,
         "name": "user2",
         "mobilePhone": "110",
-        "addr": "成都天府四街401号",
+        "addr": "成都锦城四街401号",
         "balance": 2.00,
         "userState": "0",
         "userAddrVOList": [
@@ -434,17 +436,85 @@ public class MyBatisPlusUserServiceTest {
 
 # 【5】JSON处理器
 
+1）业务场景：user_tbl表有一个info字段是json字符串，在查询user时，需要把info转为UserInfo这种Bean； 
+
+修改UserPO，为UserInfoPO字段新增注解(表明使用Jackson来做json解析为javabean)，且UserPO的@TableName注解新增autoResultMap属性；
+
+![image-20250709215212644](./pic/03/0302.png)
 
 
 
+## 【5.1】代码实现 
 
+步骤1：为user_tbl新增info字段，默认值设置为 {\"age\":11,\"nikeName\":\"zhangsan11\"}
 
+```sql
+alter table mywarn.user_tbl add column `info` varchar(512) default '{}' COMMENT '用户信息';
+```
 
+步骤2：新增UserInfoPO类，修改UserPO，新增UserInfoPO属性，并为@TableName注解新增属性autoResultMap=true；
 
+```java
+@Data
+@TableName(value = "user_tbl", autoResultMap = true)
+public class UserPO {
 
+    @TableId("id")
+    private Long id;
 
+    @TableField("name")
+    private String name;
 
+    private String mobilePhone;
 
+    private String addr;
+
+    private BigDecimal balance;
+
+//    private String userState;
+    private UserStateEnum userState;
+
+    private String deleted;
+
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private UserInfoPO info;
+}
+```
+
+【UserInfoPO】
+
+```java
+@Data
+public class UserInfoPO {
+
+    private int age;
+    private String nikeName;
+}
+```
+
+【运行结果】
+
+```c++
+[
+    {
+        "id": 1,
+        "name": "user1",
+        "mobilePhone": "17612342701",
+        "addr": "成都锦城三街101号",
+        "balance": 1.00,
+        "userState": "ON",
+        "userAddrVOList": null,
+        "info": {
+            "age": 11,
+            "nikeName": "zhangsan11"
+        }
+    }
+]
+```
+
+<br>
+
+<br>
 
 
 

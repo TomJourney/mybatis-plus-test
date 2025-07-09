@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor(staticName = "of") // 设置静态生成器方法
 public class UserInfoPO {
 
     private int age;

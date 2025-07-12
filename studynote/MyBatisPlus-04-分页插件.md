@@ -12,7 +12,9 @@
 
 # 【1】MyBatisPlus分页插件介绍与基本用法
 
-1）如何引用MyBatisPlus分页插件： 注册MyBatisPlus拦截器实例并新增分页内部拦截器到MyBatisPlus拦截器实例；
+## 【1.1】第1步：引用MyBatisPlus分页插件
+
+注册MyBatisPlus拦截器实例并新增分页内部拦截器到MyBatisPlus拦截器实例；
 
 【MybatisPlusConfig】
 
@@ -33,7 +35,7 @@ public class MybatisPlusConfig {
 }
 ```
 
-## 【1.1】自定义 Mapper 方法中使用分页
+### 【1.1.1】自定义 Mapper 方法中使用分页
 
 ```java
 IPage<UserVo> selectPageVo(IPage<?> page, Integer state);
@@ -62,7 +64,7 @@ List<UserVo> selectPageVo(IPage<UserVo> page, Integer state);
 
 ---
 
-## 【1.2】Page 类(diy分页模型)
+### 【1.1.2】Page 类(diy分页模型)
 
 Page 类继承了 IPage 类，实现了简单分页模型。如果你需要实现自己的分页模型，可以继承 Page 类或实现 IPage 类。
 
@@ -72,7 +74,7 @@ Page 类继承了 IPage 类，实现了简单分页模型。如果你需要实�
 
 ---
 
-### 【1.2.1】IService中的分页api
+### 【1.1.3】IService中的分页api
 
 【IService】
 
@@ -126,9 +128,9 @@ default List<Map<String, Object>> listMaps(IPage<? extends Map<String, Object>> 
 
 ---
 
-## 【1.2】分页查询代码
+## 【1.2】第2步：分页查询代码
 
-### 【1.2.1】分页查询用户
+### 【1.2.1】分页查询用户单测案例
 
 【MyBatisPlusPageQueryTest】
 
@@ -179,18 +181,214 @@ JDBC Connection [com.mysql.cj.jdbc.ConnectionImpl@b90c5a5] will not be managed b
 ==>  Preparing: SELECT id, name, mobile_phone, addr, balance, user_state, deleted, info FROM user_tbl WHERE deleted = '0' ORDER BY balance ASC LIMIT ?
 ==> Parameters: 5(Long)
 <==    Columns: id, name, mobile_phone, addr, balance, user_state, deleted, info
-<==        Row: 10000, user10000, 17712310000, 成都天府三街10000号, 0.00, null, 0, {"age":11,"nikeName":"zhangsan11"}
-<==        Row: 123002, user0706_0, 13008d, 成都市天府六街第0号, 0.00, null, 0, {"age":11,"nikeName":"zhangsan11"}
-<==        Row: 1, user1, 17612342701, 成都天府三街101号, 1.00, 1, 0, {"age":11,"nikeName":"zhangsan11"}
-<==        Row: 2, user2, 110, 成都天府四街401号, 2.00, 0, 0, {"age":11,"nikeName":"zhangsan11"}
-<==        Row: 3, user3, 17612342703, 成都天府三街103号, 3.00, 0, 0, {"age":11,"nikeName":"zhangsan11"}
+<==        Row: 10000, user10000, 17712310000, 成都锦城三街10000号, 0.00, null, 0, {"age":11,"nikeName":"zhangsan11"}
+<==        Row: 123002, user0706_0, 13008d, 成都市锦城六街第0号, 0.00, null, 0, {"age":11,"nikeName":"zhangsan11"}
+<==        Row: 1, user1, 17612342701, 成都锦城三街101号, 1.00, 1, 0, {"age":11,"nikeName":"zhangsan11"}
+<==        Row: 2, user2, 110, 成都锦城四街401号, 2.00, 0, 0, {"age":11,"nikeName":"zhangsan11"}
+<==        Row: 3, user3, 17612342703, 成都锦城三街103号, 3.00, 0, 0, {"age":11,"nikeName":"zhangsan11"}
 <==      Total: 5
 Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@614cd187]
 总条数 = 19024, 总页数 = 3805
-分页数据 = [UserPO(id=10000, name=user10000, mobilePhone=17712310000, addr=成都天府三街10000号, balance=0.00, userState=null, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=123002, name=user0706_0, mobilePhone=13008d, addr=成都市天府六街第0号, balance=0.00, userState=null, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=1, name=user1, mobilePhone=17612342701, addr=成都天府三街101号, balance=1.00, userState=ON, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=2, name=user2, mobilePhone=110, addr=成都天府四街401号, balance=2.00, userState=OFF, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=3, name=user3, mobilePhone=17612342703, addr=成都天府三街103号, balance=3.00, userState=OFF, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11))]
+分页数据 = [UserPO(id=10000, name=user10000, mobilePhone=17712310000, addr=成都锦城三街10000号, balance=0.00, userState=null, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=123002, name=user0706_0, mobilePhone=13008d, addr=成都市锦城六街第0号, balance=0.00, userState=null, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=1, name=user1, mobilePhone=17612342701, addr=成都锦城三街101号, balance=1.00, userState=ON, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=2, name=user2, mobilePhone=110, addr=成都锦城四街401号, balance=2.00, userState=OFF, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=3, name=user3, mobilePhone=17612342703, addr=成都锦城三街103号, balance=3.00, userState=OFF, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11))]
 ```
 
 <br>
 
 ---
 
+# 【2】通用分页实体
+
+## 【2.1】实现简单的分页查询api
+
+1）业务需求： 分页查询api，
+
+2）参数如下：
+
+- pageNo：页码；
+- pageSize：分页大小； 
+- sortBy： 排序字段；
+- isAsc：排序策略；
+- 其他查询条件；
+
+<br>
+
+---
+
+### 【2.1.1】代码实现
+
+【MybatisPlusPageQueryController】
+
+```python
+@RestController
+@RequestMapping("/user/page-query")
+public class MybatisPlusPageQueryController {
+
+    @Autowired
+    private MyBatisPlusUserService myBatisPlusUserService;
+
+    @PostMapping(path = "/pageQueryUser", consumes = "application/json")
+    public BusiPageResultContainer<UserVO> queryUserByPage(@RequestBody UserQueryDTO userQueryDTO) {
+        return myBatisPlusUserService.pageUserByPage(userQueryDTO);
+    }
+}
+```
+
+【UserQueryDTO】
+
+```java
+@Data
+public class UserQueryDTO extends BusiPageQryParam {
+
+    private String name;
+
+    private String userState;
+
+    private BigDecimal minBalance;
+
+    private BigDecimal maxBalance;
+}
+```
+
+【BusiPageQryParam】 分页参数
+
+```java
+@Data
+public class BusiPageQryParam {
+
+    private Integer pageNo;
+    private Integer pageSize;
+    private String sortBy;
+    private Boolean isAsc;
+}
+```
+
+【BusiPageResultContainer】 分页结果容器
+
+```java
+@Data
+@AllArgsConstructor(staticName = "of") // 设置静态生成器方法
+public class BusiPageResultContainer<T> {
+    private Long rdTotal;
+    private Long pageTotal;
+    private List<T> resultList;
+}
+```
+
+【MyBatisPlusUserService】
+
+```java
+@Service
+@RequiredArgsConstructor
+public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
+
+    private final UserConverter userConverter;
+    private final UserAddrConverter userAddrConverter;    
+
+    public BusiPageResultContainer<UserVO> pageUserByPage(UserQueryDTO userQueryDTO) {
+        String name = userQueryDTO.getName();
+        String userState = userQueryDTO.getUserState();
+        // 1 构建分页条件
+        // 1.1 分页条件
+        Page<UserPO> page = Page.of(userQueryDTO.getPageNo(), userQueryDTO.getPageSize());
+        // 1.2 排序条件
+        if (StringUtils.hasText(userQueryDTO.getSortBy()) && Objects.nonNull(userQueryDTO.getIsAsc())) {
+            page.addOrder((new OrderItem()).setColumn(userQueryDTO.getSortBy()).setAsc(userQueryDTO.getIsAsc()));
+        } else {
+            page.addOrder(OrderItem.asc("id"));
+        }
+
+        // 2 分页查询
+        Page<UserPO> pageResult = lambdaQuery().
+                like(name != null, UserPO::getName, name)
+                .eq(userState != null, UserPO::getUserState, userState)
+                .page(page);
+        // 3 封装vo结果
+        return BusiPageResultContainer.of(
+                pageResult.getTotal(), pageResult.getPages(), userConverter.toUserVOList(pageResult.getRecords()));
+    }
+//==>  Preparing: SELECT COUNT(*) AS total FROM user_tbl WHERE deleted = '0'
+//            ==> Parameters:
+//            <==    Columns: total
+//<==        Row: 19024
+//            <==      Total: 1
+//            ==>  Preparing: SELECT id, name, mobile_phone, addr, balance, user_state, deleted, info FROM user_tbl WHERE deleted = '0' ORDER BY id ASC LIMIT ?
+//            ==> Parameters: 2(Long)
+//            <==    Columns: id, name, mobile_phone, addr, balance, user_state, deleted, info
+//<==        Row: 1, user1, 17612342701, 成都天府三街101号, 1.00, 1, 0, {"age":11,"nikeName":"zhangsan11"}
+//<==        Row: 2, user2, 110, 成都天府四街401号, 2.00, 0, 0, {"age":11,"nikeName":"zhangsan11"}
+//<==      Total: 2
+}
+```
+
+### 【2.1.2】分页查询api验证
+
+查询路径： post localhost:8081/user/page-query/pageQueryUser 
+
+报文
+
+```json
+{
+    "pageNo": 1,
+    "pageSize": 2    
+}
+```
+
+查询结果：
+
+```json
+{
+    "rdTotal": 19024,
+    "pageTotal": 9512,
+    "resultList": [
+        {
+            "id": 1,
+            "name": "user1",
+            "mobilePhone": "17612342701",
+            "addr": "成都天府三街101号",
+            "balance": 1.00,
+            "userState": "ON",
+            "userAddrVOList": null,
+            "info": {
+                "age": 11,
+                "nikeName": "zhangsan11"
+            }
+        },
+        {
+            "id": 2,
+            "name": "user2",
+            "mobilePhone": "110",
+            "addr": "成都天府四街401号",
+            "balance": 2.00,
+            "userState": "OFF",
+            "userAddrVOList": null,
+            "info": {
+                "age": 11,
+                "nikeName": "zhangsan11"
+            }
+        }
+    ]
+}
+```
+
+<br>
+
+---
+
+# 【3】通用分页实体与MybatisPlus转换
+
+1）业务需求：
+
+- 在BusiPageQryParam中定义方法，把BusiPageQryParam转为MyBatisPlus中的Page对象；
+- 在BusiPageResultContainer中定义方法，把MyBatisPlus中的Page结果转为BusiPageResultContainer；
+
+## 【3.1】把分页参数转为MyBatisPlus中的Page对象
+
+
+
+
+
+<br>
+
+---
+
+## 【3.2】MyBatisPlus中的Page结果转为分页查询结果容器对象BusiPageResultContainer

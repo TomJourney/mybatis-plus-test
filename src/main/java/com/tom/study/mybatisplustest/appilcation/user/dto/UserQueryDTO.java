@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  * @createTime 2025年07月06日 07:25:00
  */
 @Data
-public class UserQueryDTO {
+public class UserQueryDTO extends BusiPageQryParam {
 
     private String name;
 

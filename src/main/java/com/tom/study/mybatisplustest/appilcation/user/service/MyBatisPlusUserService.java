@@ -1,9 +1,12 @@
 package com.tom.study.mybatisplustest.appilcation.user.service;
 
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.tom.study.mybatisplustest.adapter.user.vo.UserAddrVO;
 import com.tom.study.mybatisplustest.adapter.user.vo.UserVO;
+import com.tom.study.mybatisplustest.appilcation.user.dto.BusiPageResultContainer;
 import com.tom.study.mybatisplustest.appilcation.user.dto.UserQueryDTO;
 import com.tom.study.mybatisplustest.infrastructure.converter.UserAddrConverter;
 import com.tom.study.mybatisplustest.infrastructure.converter.UserConverter;
@@ -13,6 +16,7 @@ import com.tom.study.mybatisplustest.infrastructure.dao.user.mapper.UserPO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -120,10 +124,44 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
                 userAddrConverter.toUserAddrVOList(userAddrPOList).stream().collect(Collectors.groupingBy(UserAddrVO::getUserId));
         // 3 封装地址到用户
         if (!CollectionUtils.isEmpty(userVOList)) {
-            userVOList.forEach(userVO->{
+            userVOList.forEach(userVO -> {
                 userVO.setUserAddrVOList(userIdToUserAddrVOsMap.getOrDefault(userVO.getId(), Collections.emptyList()));
             });
         }
         return userVOList;
     }
+
+    public BusiPageResultContainer<UserVO> pageUserByPage(UserQueryDTO userQueryDTO) {
+        String name = userQueryDTO.getName();
+        String userState = userQueryDTO.getUserState();
+        // 1 构建分页条件
+        // 1.1 分页条件
+        Page<UserPO> page = Page.of(userQueryDTO.getPageNo(), userQueryDTO.getPageSize());
+        // 1.2 排序条件
+        if (StringUtils.hasText(userQueryDTO.getSortBy()) && Objects.nonNull(userQueryDTO.getIsAsc())) {
+            page.addOrder((new OrderItem()).setColumn(userQueryDTO.getSortBy()).setAsc(userQueryDTO.getIsAsc()));
+        } else {
+            page.addOrder(OrderItem.asc("id"));
+        }
+
+        // 2 分页查询
+        Page<UserPO> pageResult = lambdaQuery().
+                like(name != null, UserPO::getName, name)
+                .eq(userState != null, UserPO::getUserState, userState)
+                .page(page);
+        // 3 封装vo结果
+        return BusiPageResultContainer.of(
+                pageResult.getTotal(), pageResult.getPages(), userConverter.toUserVOList(pageResult.getRecords()));
+    }
+//==>  Preparing: SELECT COUNT(*) AS total FROM user_tbl WHERE deleted = '0'
+//            ==> Parameters:
+//            <==    Columns: total
+//<==        Row: 19024
+//            <==      Total: 1
+//            ==>  Preparing: SELECT id, name, mobile_phone, addr, balance, user_state, deleted, info FROM user_tbl WHERE deleted = '0' ORDER BY id ASC LIMIT ?
+//            ==> Parameters: 2(Long)
+//            <==    Columns: id, name, mobile_phone, addr, balance, user_state, deleted, info
+//<==        Row: 1, user1, 17612342701, 成都天府三街101号, 1.00, 1, 0, {"age":11,"nikeName":"zhangsan11"}
+//<==        Row: 2, user2, 110, 成都天府四街401号, 2.00, 0, 0, {"age":11,"nikeName":"zhangsan11"}
+//<==      Total: 2
 }

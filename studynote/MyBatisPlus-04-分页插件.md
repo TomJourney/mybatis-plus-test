@@ -10,7 +10,7 @@
 
 ---
 
-# 【1】MyBatisPlus分页插件
+# 【1】MyBatisPlus分页插件介绍与基本用法
 
 1）如何引用MyBatisPlus分页插件： 注册MyBatisPlus拦截器实例并新增分页内部拦截器到MyBatisPlus拦截器实例；
 
@@ -126,7 +126,7 @@ default List<Map<String, Object>> listMaps(IPage<? extends Map<String, Object>> 
 
 ---
 
-## 【1.2】分页代码
+## 【1.2】分页查询代码
 
 ### 【1.2.1】分页查询用户
 
@@ -189,4 +189,8 @@ Closing non transactional SqlSession [org.apache.ibatis.session.defaults.Default
 总条数 = 19024, 总页数 = 3805
 分页数据 = [UserPO(id=10000, name=user10000, mobilePhone=17712310000, addr=成都天府三街10000号, balance=0.00, userState=null, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=123002, name=user0706_0, mobilePhone=13008d, addr=成都市天府六街第0号, balance=0.00, userState=null, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=1, name=user1, mobilePhone=17612342701, addr=成都天府三街101号, balance=1.00, userState=ON, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=2, name=user2, mobilePhone=110, addr=成都天府四街401号, balance=2.00, userState=OFF, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11)), UserPO(id=3, name=user3, mobilePhone=17612342703, addr=成都天府三街103号, balance=3.00, userState=OFF, deleted=0, info=UserInfoPO(age=11, nikeName=zhangsan11))]
 ```
+
+<br>
+
+---
 

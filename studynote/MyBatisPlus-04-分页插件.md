@@ -6,6 +6,8 @@
 
 本文部分内容总结自分页插件官方文档： [https://baomidou.com/plugins/pagination/](https://baomidou.com/plugins/pagination/) ; 
 
+
+
 <br>
 
 ---
@@ -374,21 +376,60 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
 
 ---
 
-# 【3】通用分页实体与MybatisPlus转换
+# 【3】重构MyBatisPlus的分页查询逻辑
 
-1）业务需求：
+1）问题：MyBatisPlusUserService-pageUserByPage()方法中，构建分页查询条件与排序条件属公共逻辑，不应该与业务逻辑耦合，所以可以将其重构到BusiPageQryParam中。
 
-- 在BusiPageQryParam中定义方法，把BusiPageQryParam转为MyBatisPlus中的Page对象；
-- 在BusiPageResultContainer中定义方法，把MyBatisPlus中的Page结果转为BusiPageResultContainer；
+【BusiPageQryParam】重构后的BusiPageQryParam
 
-## 【3.1】把分页参数转为MyBatisPlus中的Page对象
+```java
+@Data
+public class BusiPageQryParam {
 
+    private Integer pageNo = 1;
+    private Integer pageSize = 10;
+    private String sortBy;
+    private Boolean isAsc = Boolean.TRUE;
 
+    public <T> Page<T> toMyBatisPlusPage(OrderItem... orderItems) {
+        // 1.1 分页条件
+        Page<T> page = Page.of(pageNo, pageSize);
+        // 1.2 排序条件
+        if (StringUtils.hasText(sortBy)) {
+            page.addOrder((new OrderItem()).setColumn(sortBy).setAsc(isAsc));
+        } else if (orderItems != null && orderItems.length > 0) {
+            // 为空默认传递
+            page.addOrder(orderItems);
+        }
+        return page;
+    }
 
+}
+```
 
+【MyBatisPlusUserService】使用重构后的toMyBatisPlusPage方法
+
+```java
+public BusiPageResultContainer<UserVO> pageUserByPage2(UserQueryDTO userQueryDTO) {
+    String name = userQueryDTO.getName();
+    String userState = userQueryDTO.getUserState();
+    // 1 构建分页条件+排序条件
+    Page<UserPO> myBatisPlusPage =
+            userQueryDTO.toMyBatisPlusPage(new OrderItem().setColumn(userQueryDTO.getSortBy()).setAsc(userQueryDTO.getIsAsc()));
+
+    // 2 分页查询
+    Page<UserPO> pageResult = lambdaQuery().
+            like(name != null, UserPO::getName, name)
+            .eq(userState != null, UserPO::getUserState, userState)
+            .page(myBatisPlusPage);
+
+    // 3 封装vo结果
+    return BusiPageResultContainer.of(
+            pageResult.getTotal(), pageResult.getPages(), userConverter.toUserVOList(pageResult.getRecords()));
+}
+```
 
 <br>
 
----
+<br>
 
-## 【3.2】MyBatisPlus中的Page结果转为分页查询结果容器对象BusiPageResultContainer

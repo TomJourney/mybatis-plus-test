@@ -164,4 +164,22 @@ public class MyBatisPlusUserService extends ServiceImpl<UserMapper, UserPO> {
 //<==        Row: 1, user1, 17612342701, 成都天府三街101号, 1.00, 1, 0, {"age":11,"nikeName":"zhangsan11"}
 //<==        Row: 2, user2, 110, 成都天府四街401号, 2.00, 0, 0, {"age":11,"nikeName":"zhangsan11"}
 //<==      Total: 2
+
+    public BusiPageResultContainer<UserVO> pageUserByPage2(UserQueryDTO userQueryDTO) {
+        String name = userQueryDTO.getName();
+        String userState = userQueryDTO.getUserState();
+        // 1 构建分页条件+排序条件
+        Page<UserPO> myBatisPlusPage =
+                userQueryDTO.toMyBatisPlusPage(new OrderItem().setColumn(userQueryDTO.getSortBy()).setAsc(userQueryDTO.getIsAsc()));
+
+        // 2 分页查询
+        Page<UserPO> pageResult = lambdaQuery().
+                like(name != null, UserPO::getName, name)
+                .eq(userState != null, UserPO::getUserState, userState)
+                .page(myBatisPlusPage);
+
+        // 3 封装vo结果
+        return BusiPageResultContainer.of(
+                pageResult.getTotal(), pageResult.getPages(), userConverter.toUserVOList(pageResult.getRecords()));
+    }
 }
